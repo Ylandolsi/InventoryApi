@@ -11,6 +11,7 @@ namespace InventoryApi.Services
         Task<int> AddAsync(Book book);
         Task<int> UpdateAsync(Book book);
         Task<int> DeleteAsync(int id);
+        Task<IEnumerable<Book>> SearchAsync(string query);
     }
 
     public class BookService : IBookService
@@ -46,6 +47,12 @@ namespace InventoryApi.Services
         {
             var sql = "DELETE FROM Books WHERE Id = @Id";
             return await _db.ExecuteAsync(sql, new { Id = id });
+        }
+
+        public async Task<IEnumerable<Book>> SearchAsync(string query)
+        {
+            var sql = "SELECT * FROM Books WHERE Title ILIKE @Query OR Description ILIKE @Query";
+            return await _db.QueryAsync<Book>(sql, new { Query = $"%{query}%" });
         }
     }
 }

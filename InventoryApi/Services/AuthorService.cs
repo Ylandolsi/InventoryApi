@@ -11,6 +11,7 @@ namespace InventoryApi.Services
         Task<int> AddAsync(Author author);
         Task<int> UpdateAsync(Author author);
         Task<int> DeleteAsync(int id);
+        Task<IEnumerable<Author>> SearchAsync(string query);
     }
 
     public class AuthorService : IAuthorService
@@ -46,6 +47,12 @@ namespace InventoryApi.Services
         {
             var sql = "DELETE FROM Authors WHERE Id = @Id";
             return await _db.ExecuteAsync(sql, new { Id = id });
+        }
+
+        public async Task<IEnumerable<Author>> SearchAsync(string query)
+        {
+            var sql = "SELECT * FROM Authors WHERE Name ILIKE @Query OR Bio ILIKE @Query";
+            return await _db.QueryAsync<Author>(sql, new { Query = $"%{query}%" });
         }
     }
 }

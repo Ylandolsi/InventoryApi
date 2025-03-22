@@ -49,5 +49,13 @@ namespace InventoryApi.Controllers
             if (result == 0) return NotFound();
             return NoContent();
         }
+
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(string query)
+        {
+            var results = await _service.SearchAsync(query);
+            return Ok(results);
+        }
     }
 }

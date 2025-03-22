@@ -11,6 +11,7 @@ namespace InventoryApi.Services
         Task<int> AddAsync(Genre genre);
         Task<int> UpdateAsync(Genre genre);
         Task<int> DeleteAsync(int id);
+        Task<IEnumerable<Genre>> SearchAsync(string query);
     }
 
     public class GenreService : IGenreService
@@ -46,6 +47,12 @@ namespace InventoryApi.Services
         {
             var sql = "DELETE FROM Genres WHERE Id = @Id";
             return await _db.ExecuteAsync(sql, new { Id = id });
+        }
+
+        public async Task<IEnumerable<Genre>> SearchAsync(string query)
+        {
+            var sql = "SELECT * FROM Genres WHERE Name ILIKE @Query OR Description ILIKE @Query";
+            return await _db.QueryAsync<Genre>(sql, new { Query = $"%{query}%" });
         }
     }
 }
