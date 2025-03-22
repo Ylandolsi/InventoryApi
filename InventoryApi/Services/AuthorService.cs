@@ -54,5 +54,7 @@ namespace InventoryApi.Services
             var sql = "SELECT * FROM Authors WHERE Name ILIKE @Query OR Bio ILIKE @Query";
             return await _db.QueryAsync<Author>(sql, new { Query = $"%{query}%" });
         }
+
+        
     }
 }

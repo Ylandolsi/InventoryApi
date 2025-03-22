@@ -51,10 +51,18 @@ namespace InventoryApi.Controllers
         }
         
         [HttpGet("search")]
-        public async Task<IActionResult> Search([FromQuery] string query)
+        public async Task<IActionResult> Search( [FromQuery]string query, bool includeDetails = true)
         {
-            var results = await _service.SearchAsync(query);
-            return Ok(results);
+            if (includeDetails)
+            {
+                var booksWithDetails = await _service.SearchWithDetailsAsync(query);
+                return Ok(booksWithDetails);
+            }
+            else
+            {
+                var results = await _service.SearchAsync(query);
+                return Ok(results);
+            }
         }
     }
 }
