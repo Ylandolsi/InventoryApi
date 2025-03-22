@@ -50,12 +50,12 @@ namespace InventoryApi.Controllers
             return NoContent();
         }
 
-
         [HttpGet("search")]
-        public async Task<IActionResult> Search(string query)
+        public async Task<IActionResult> Search([FromQuery] string query)
         {
             var results = await _service.SearchAsync(query);
             return Ok(results);
         }
+
     }
 }
