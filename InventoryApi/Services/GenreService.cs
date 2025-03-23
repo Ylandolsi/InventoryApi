@@ -6,12 +6,19 @@ namespace InventoryApi.Services
 {
     public interface IGenreService
     {
-        Task<IEnumerable<Genre>> GetAllAsync();
+        Task<IEnumerable<GenreDto>> GetAllAsync();
         Task<Genre> GetByIdAsync(int id);
         Task<int> AddAsync(Genre genre);
         Task<int> UpdateAsync(Genre genre);
         Task<int> DeleteAsync(int id);
-        Task<IEnumerable<Genre>> SearchAsync(string query);
+        Task<IEnumerable<GenreDto>> SearchAsync(string query);
+    }
+
+    public class GenreDto{
+        public int Id{set;get; }
+        public string Name{set;get;}
+        public string Description{set;get;}
+        public int BookCount{set;get;}
     }
 
     public class GenreService : IGenreService
@@ -19,10 +26,13 @@ namespace InventoryApi.Services
         private readonly IDbConnection _db;
         public GenreService(IDbConnection db) => _db = db;
 
-        public async Task<IEnumerable<Genre>> GetAllAsync()
+        public async Task<IEnumerable<GenreDto>> GetAllAsync()
         {
-            var sql = "SELECT * FROM Genres";
-            return await _db.QueryAsync<Genre>(sql);
+            var sql = @"SELECT g.*, COUNT(b.id) AS BookCount 
+                        FROM Genres g
+                        LEFT JOIN Books b ON g.Id = b.GenreId
+                        GROUP BY g.Id";
+            return await _db.QueryAsync<GenreDto>(sql);
         }
 
         public async Task<Genre> GetByIdAsync(int id)
@@ -39,7 +49,7 @@ namespace InventoryApi.Services
 
         public async Task<int> UpdateAsync(Genre genre)
         {
-            var sql = "UPDATE Genres SET Name = @Name  , Description = @Description WHERE Id = @Id";
+            var sql = "UPDATE Genres SET Name = @Name, Description = @Description WHERE Id = @Id";
             return await _db.ExecuteAsync(sql, genre);
         }
 
@@ -49,10 +59,14 @@ namespace InventoryApi.Services
             return await _db.ExecuteAsync(sql, new { Id = id });
         }
 
-        public async Task<IEnumerable<Genre>> SearchAsync(string query)
+        public async Task<IEnumerable<GenreDto>> SearchAsync(string query)
         {
-            var sql = "SELECT * FROM Genres WHERE Name ILIKE @Query OR Description ILIKE @Query";
-            return await _db.QueryAsync<Genre>(sql, new { Query = $"%{query}%" });
+            var sql = @"SELECT g.*, COUNT(b.id) AS BookCount 
+                    FROM Genres g
+                    LEFT JOIN Books b ON g.Id = b.GenreId 
+                    WHERE g.Name ILIKE @Query OR g.Description ILIKE @Query
+                    GROUP BY g.Id";
+            return await _db.QueryAsync<GenreDto>(sql, new { Query = $"%{query}%" });
         }
     }
 }
