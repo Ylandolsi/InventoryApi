@@ -33,8 +33,8 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
-// Initialize the database with a retry mechanism for Docker startup sequence
-if (app.Environment.IsDevelopment())
+// Initialize the database with a retry mechanism for both Development and Production
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     var maxRetryAttempts = 5;
     var retryDelaySeconds = 10;
