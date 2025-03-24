@@ -7,6 +7,6 @@ namespace InventoryApi.Models
         public int Quantity{get;set;}
         public int AuthorId { get; set; }
         public int GenreId { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = "No description available";
     }
 }

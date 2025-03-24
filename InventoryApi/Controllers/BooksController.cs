@@ -39,7 +39,7 @@ namespace InventoryApi.Controllers
             book.Id = id;
             var result = await _service.UpdateAsync(book);
             if (result == 0) return NotFound();
-            return NoContent();
+            return RedirectToAction(nameof(GetById), new { id });
         }
 
         [HttpDelete("{id}")]

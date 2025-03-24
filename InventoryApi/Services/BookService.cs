@@ -17,7 +17,7 @@ namespace InventoryApi.Services
     public interface IBookService
     {
         Task<IEnumerable<BookDto>> GetAllAsync();
-        Task<BookDto> GetByIdAsync(int id);
+        Task<Book> GetByIdAsync(int id);
         Task<int> AddAsync(Book book);
         Task<int> UpdateAsync(Book book);
         Task<int> DeleteAsync(int id);
@@ -50,14 +50,12 @@ namespace InventoryApi.Services
             return results;
         }
 
-        public async Task<BookDto> GetByIdAsync(int id)
+        public async Task<Book> GetByIdAsync(int id)
         {
-            var sql = @"SELECT b.*, a.Name AS author, g.Name AS genre 
+            var sql = @"SELECT b.* 
                       FROM Books b
-                      LEFT JOIN Authors a ON b.AuthorId = a.Id 
-                      LEFT JOIN Genres g ON b.GenreId = g.Id
                       WHERE b.Id = @Id";
-            var result = await _db.QuerySingleOrDefaultAsync<BookDto>(sql, new { Id = id });
+            var result = await _db.QuerySingleOrDefaultAsync<Book>(sql, new { Id = id });
 
             return result ;
         }
