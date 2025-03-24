@@ -32,7 +32,7 @@ WORKDIR /app
 COPY --from=publish /publish .
 # expose the ports 80 and 443
 # informs docker that the container listens on the specified network ports 
-EXPOSE 80
+EXPOSE 8080
 EXPOSE 443
 # loads the appsetting.Docker.json file
 ENV ASPNETCORE_ENVIRONMENT=Docker

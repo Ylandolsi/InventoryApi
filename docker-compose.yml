@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "5159:80"
+      - "5159:8080"
     depends_on:
       - db
     environment:
@@ -50,7 +50,7 @@ volumes:
 #   - **build**: Specifies the build configuration for the `api` service.
 #     - **context**: The build context, which is the current directory (`.`).
 #     - **dockerfile**: The Dockerfile to use for building the image.
-#   - **ports**: Maps port 5159 on the host to port 80 in the container.
+#   - **ports**: Maps port 5159 on the host to port 8080 in the container.
 #   - **depends_on**: Specifies that the `api` service depends on the `db` service.
 #   - **environment**: Sets environment variables for the `api` service.
 #   - **networks**: Specifies the network(s) the service is connected to.
