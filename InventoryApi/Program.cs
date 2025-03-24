@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
                     "http://localhost:5173",      
                     "http://localhost:5159",     // Add the API's port for direct browser access
                     "https://inventory-api-la8y.onrender.com",     
-                    "https://inventory-frontend-peach.vercel.app/")     // Production domain
+                    "https://inventory-frontend-peach.vercel.app")     // Production domain
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
