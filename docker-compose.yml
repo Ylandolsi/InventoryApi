@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5159:80"
+    depends_on:
+      - db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=inventorydb;Username=postgres;Password=postgres
+    networks:
+      - inventory-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:latest
+    container_name: inventory-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=inventorydb
+    ports:
+      - "5432:5432"
+    volumes:
+      # mount a docker volume to persist the data
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - inventory-network
+    restart: unless-stopped
+
+networks:
+  inventory-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+
+
+
+
+
+
+# - **version: '3.8'**: Specifies the version of the Docker Compose file format.
+# - **services**: Defines the services that make up your application.
+# - **api**: The name of the service for your .NET API.
+#   - **build**: Specifies the build configuration for the `api` service.
+#     - **context**: The build context, which is the current directory (`.`).
+#     - **dockerfile**: The Dockerfile to use for building the image.
+#   - **ports**: Maps port 5159 on the host to port 80 in the container.
+#   - **depends_on**: Specifies that the `api` service depends on the `db` service.
+#   - **environment**: Sets environment variables for the `api` service.
+#   - **networks**: Specifies the network(s) the service is connected to.
+#   - **restart**: Configures the restart policy for the service.
+# - **db**: The name of the service for the PostgreSQL database.
+#   - **image**: Specifies the Docker image to use for the `db` service.
+#   - **container_name**: Sets a custom name for the container.
+#   - **environment**: Sets environment variables for the `db` service.
+#   - **ports**: Maps port 5432 on the host to port 5432 in the container.
+#   - **volumes**: Mounts a volume to persist data.
+#   - **networks**: Specifies the network(s) the service is connected to.
+#   - **restart**: Configures the restart policy for the service.
+# - **networks**: Defines the networks used by the services.
+#   - **inventory-network**: The name of the network.
+#     - **driver**: Specifies the network driver to use.
+# - **volumes**: Defines the volumes used by the services.
+#   - **postgres-data**: The name of the volume used to persist PostgreSQL data.

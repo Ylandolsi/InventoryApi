@@ -33,15 +33,37 @@ builder.Services.AddCors(options =>
 });
 var app = builder.Build();
 
+// Initialize the database with a retry mechanism for Docker startup sequence
 if (app.Environment.IsDevelopment())
 {
-    using (var scope = app.Services.CreateScope())
+    var maxRetryAttempts = 5;
+    var retryDelaySeconds = 10;
+    
+    for (int retryAttempt = 1; retryAttempt <= maxRetryAttempts; retryAttempt++)
     {
-        var db = scope.ServiceProvider.GetRequiredService<IDbConnection>();
-        await DbInitializer.InitializeAsync(db);
-        await SeedData.SeedAsync(db);
+        try
+        {
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<IDbConnection>();
+                await DbInitializer.InitializeAsync(db);
+                await SeedData.SeedAsync(db);
+                break; // If successful, break out of the retry loop
+            }
+        }
+        catch (Exception ex)
+        {
+            if (retryAttempt == maxRetryAttempts)
+            {
+                // If this was the last attempt, rethrow the exception
+                throw;
+            }
+            
+            Console.WriteLine($"Database initialization failed (Attempt {retryAttempt}/{maxRetryAttempts}): {ex.Message}");
+            Console.WriteLine($"Retrying in {retryDelaySeconds} seconds...");
+            await Task.Delay(TimeSpan.FromSeconds(retryDelaySeconds));
+        }
     }
-
 }
 
 app.UseHttpsRedirection();
