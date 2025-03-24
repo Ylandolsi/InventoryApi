@@ -56,8 +56,12 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
         {
             if (retryAttempt == maxRetryAttempts)
             {
-                // If this was the last attempt, rethrow the exception
-                throw;
+                Console.WriteLine($"FATAL DATABASE ERROR: {ex.Message}");
+                Console.WriteLine($"Connection string: {builder.Configuration.GetConnectionString("DefaultConnection")?.Replace("Password=", "Password=***")}");
+                Console.WriteLine($"Environment: {app.Environment.EnvironmentName}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                if (app.Environment.IsDevelopment())
+                    throw;
             }
             
             Console.WriteLine($"Database initialization failed (Attempt {retryAttempt}/{maxRetryAttempts}): {ex.Message}");
@@ -67,8 +71,15 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     }
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment() && !app.Environment.IsEnvironment("Docker"))
+{
+    app.UseHsts();
+}
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors("AllowSpecificOrigins");
 
 app.UseAuthorization();

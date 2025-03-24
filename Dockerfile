@@ -34,7 +34,12 @@ COPY --from=publish /publish .
 # informs docker that the container listens on the specified network ports 
 EXPOSE 8080
 EXPOSE 443
-# loads the appsetting.Docker.json file
-ENV ASPNETCORE_ENVIRONMENT=Docker
+
+# # loads the appsetting.Docker.json file
+# ENV ASPNETCORE_ENVIRONMENT=Docker
+#-----
+# docker run -e ASPNETCORE_ENVIRONMENT=Development myapp
+# if not set, default to Production
+ENV ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
 # run the application 
 ENTRYPOINT ["dotnet", "InventoryApi.dll"]
